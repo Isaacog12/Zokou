@@ -1,18 +1,21 @@
-# Use Node.js LTS
-FROM node:18
+FROM node:20-slim
 
-# Set working directory
-WORKDIR /app
+RUN apt-get update && \
+  apt-get install -y \
+  ffmpeg \
+  imagemagick \
+  webp \
+  git && \
+  apt-get upgrade -y && \
+  rm -rf /var/lib/apt/lists/*
 
-# Copy package.json and install dependencies
-COPY package*.json ./
-RUN npm install --production
+WORKDIR /root/zokou
 
-# Copy the rest of the app
+COPY package.json .
+RUN npm install
+
 COPY . .
 
-# Expose a port (Render requires one, even for bots)
-EXPOSE 3000
+EXPOSE 8000
 
-# Start your bot
-CMD ["npm", "start"]
+CMD ["npm","start"]
